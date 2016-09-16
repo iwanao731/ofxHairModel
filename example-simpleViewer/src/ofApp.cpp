@@ -2,8 +2,8 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	string hairname = "C:/Users/n.iwamoto/Dropbox/of_v0.9.3_vs_release/addons/ofxHairModel/example-simpleViewer/bin/data/hair_example.data";
-	string filename = "C:/Users/n.iwamoto/Dropbox/of_v0.9.3_vs_release/addons/ofxHairModel/example-simpleViewer/bin/data/head_model.obj";
+	string hairname = "hair_example.data";
+	string filename = "head_model.obj";
 
 	hairModel.loadHairModel(hairname);
 	mesh.loadOBJModel(filename);
