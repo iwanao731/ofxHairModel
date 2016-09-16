@@ -10,13 +10,12 @@ This addon is possible to import hair model and view it.
   + Visual Studio 2015
 
 ## Dependencies
-  + ofxHEMesh
-  + ofxRay
+  + <a href="https://github.com/weshoke/ofxHEMesh">ofxHEMesh</a>
+  + <a href="https://github.com/elliotwoods/ofxRay">ofxRay</a>
+  + <a href="http://eigen.tuxfamily.org/index.php?title=Main_Page">Eigen Library</a> for using ofxHEMesh
 
 ## Hair Data
 
-+ A Reduced Model for Interactive Hairs  
-http://gaps-zju.org/reducedhair/
-
-+ USC-HairSalon: A 3D Hairstyle Database for Hair Modeling (TBD...)  
-http://www-scf.usc.edu/~liwenhu/SHM/database.html  
++ A Reduced Model for Interactive Hairs [<a href="http://gaps-zju.org/reducedhair/">link</a>]
++ USC-HairSalon: A 3D Hairstyle Database for Hair Modeling [<a href="http://www-scf.usc.edu/~liwenhu/SHM/database.html">link</a>]
+ (TBD...)  
