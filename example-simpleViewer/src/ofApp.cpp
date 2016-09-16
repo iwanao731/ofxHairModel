@@ -31,23 +31,21 @@ void ofApp::draw(){
 
 	ofPushMatrix();
 	ofTranslate(0, -500, 400);
-		ofSetColor(255);
-		mesh.setTopologyDirty(true);
-		ofxHEMeshDraw hedraw(mesh);
-		hedraw.setDrawEdges(true);
-		hedraw.setDrawFaces(true);
-		hedraw.draw(cam);
+
+	ofSetColor(255);
+	mesh.setTopologyDirty(true);
+	ofxHEMeshDraw hedraw(mesh);
+	hedraw.setDrawEdges(true);
+	hedraw.setDrawFaces(true);
+	hedraw.draw(cam);
 
 	viewer->draw();
-
 	ofPopMatrix();
 
 	cam.end();
 
-	ofSetColor(255);
 	ofDisableDepthTest();
 	ofSetWindowTitle(ofToString(ofGetFrameRate()));
-
 }
 
 //--------------------------------------------------------------
