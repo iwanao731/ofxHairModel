@@ -2,7 +2,7 @@
 
 This addon is possible to import hair model and view it.
 
-<img src="top.png" alt="loaded hair result" title="">
+<img src="top.png" alt="hair result" width="600px">
 
 ## Environment
   + Windows 10
