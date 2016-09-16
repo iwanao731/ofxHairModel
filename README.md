@@ -2,6 +2,8 @@
 
 This addon is possible to import hair model and view it.
 
+<img src="top.png" alt="loaded hair result" title="">
+
 ## Environment
   + Windows 10
   + openFrameworks v0.9.3
