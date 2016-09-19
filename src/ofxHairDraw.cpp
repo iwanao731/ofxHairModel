@@ -78,3 +78,17 @@ ofxHairDraw& ofxHairDraw::setDrawHairGuide(bool v)
 	return *this;
 }
 
+void ofxHairDraw::refPosition(ofxHairModel model)
+{
+	int i = 0;
+	for (auto s : model.strands)
+	{
+		for (auto p : s.m_particles)
+		{
+			m_model.render_particles[i].x = p.position.x;
+			m_model.render_particles[i].y = p.position.y;
+			m_model.render_particles[i].z = p.position.z;
+			i++;
+		}
+	}
+}
