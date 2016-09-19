@@ -78,7 +78,7 @@ ofxHairDraw& ofxHairDraw::setDrawHairGuide(bool v)
 	return *this;
 }
 
-void ofxHairDraw::refPosition(ofxHairModel model)
+void ofxHairDraw::updatePosition(ofxHairModel model)
 {
 	int i = 0;
 	for (auto s : model.strands)

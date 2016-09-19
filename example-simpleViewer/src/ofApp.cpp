@@ -2,19 +2,27 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	string hairname = "hair_example.data";
+	string hairname = "strands00001.data"; // Hao Hair Model
 	string filename = "head_model.obj";
 
-	hairModel.loadHairModel(hairname);
+	hairModel.loadHairModelUSC(hairname);
+	//hairModel.loadHairModel(hairname);
+
 	mesh.loadOBJModel(filename);
 
-	viewer = new ofxHairDraw(hairModel);
-	viewer->setDrawHairColor(true);
-	viewer->setDrawHairParticles(false);
-	viewer->setDrawHairEdges(true);
-	viewer->setDrawHairNormal(true);
-	viewer->setDrawHairGuide(true);
-	viewer->init();
+	if (hairModel.isExistence())
+	{
+		viewer = new ofxHairDraw(hairModel);
+		viewer->setDrawHairColor(true);
+		viewer->setDrawHairParticles(false);
+		viewer->setDrawHairEdges(true);
+		viewer->setDrawHairNormal(true);
+		viewer->setDrawHairGuide(true);
+		viewer->init();
+	}
+	else {
+		cout << "not existence" << endl;
+	}
 }
 
 //--------------------------------------------------------------
@@ -101,4 +109,24 @@ void ofApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+//--------------------------------------------------------------
+void ofApp::processOpenFileSelection(ofFileDialogResult openFileResult) {
+
+	ofLogVerbose("getName(): " + openFileResult.getName());
+	ofLogVerbose("getPath(): " + openFileResult.getPath());
+
+	cout << "reading >>> " << openFileResult.getPath() << endl;
+	ofFile file(openFileResult.getPath());
+
+	if (file.exists()) {
+		//Limiting this example to one image so we delete previous ones
+		ofLogVerbose("The file exists - now checking the type via file extension");
+		string fileExtension = ofToUpper(file.getExtension());
+
+		if (fileExtension == "DATA") {
+			hairModel.loadHairModelUSC(openFileResult.getPath());
+		}
+	}
 }

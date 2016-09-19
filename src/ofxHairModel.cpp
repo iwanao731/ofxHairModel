@@ -1,5 +1,15 @@
 #include "ofxHairModel.h"
 
+ofxHairModel::ofxHairModel() 
+{
+
+}
+
+ofxHairModel::~ofxHairModel()
+{
+
+}
+
 void ofxHairModel::addHairStrand(const ofVec3f position, const ofVec3f normal, const float length, const int resolution)
 {
 	ofxHairStrand s;
@@ -78,7 +88,7 @@ bool ofxHairModel::loadHairModel(string filename)
 	file.close();
 
 	int count = 0;
-	for (int i = 0; i<strands.size(); i++) {
+	for (int i = 0; i<m_numStrands; i++) {
 
 		// set random color
 		ofColor c;
@@ -109,6 +119,86 @@ bool ofxHairModel::loadHairModel(string filename)
 	return true;
 }
 
+bool ofxHairModel::loadHairModelUSC(string filename)
+{
+	ofFile file;
+	file.open(filename, ofFile::ReadOnly, true);
+	if (!file.exists()) {
+		ofLogVerbose("ofxHairModel") << "loadHairModel(): model does not exist: \"" << filename << "\"";
+		return false;
+	}
+
+	file.read((char*)&m_numStrands, sizeof(m_numStrands));
+	strands.resize(m_numStrands);
+
+	m_numParticles = 0;
+
+	for (int i = 0; i < m_numStrands; i++) {
+
+		int resolution = 0;
+		file.read((char*)&resolution, sizeof(resolution));
+		
+		strands[i].m_particles.resize(resolution);
+		strands[i].m_resolution = resolution;
+		strands[i].m_length.resize(strands[i].m_resolution);
+		m_numParticles += resolution;
+
+		ofColor c;
+		c.setHsb(ofRandom(0, 255), 200, 255, 255);
+
+		for (int j = 0; j < strands[i].m_resolution; j++) {
+
+			float pos[3];
+			file.read((char*)&pos, sizeof(pos));
+			strands[i].m_particles[j].position.set(pos[0], pos[1], pos[2]);
+			strands[i].m_particles[j].position = strands[i].m_particles[j].position * 300;
+			strands[i].m_particles[j].position0 = strands[i].m_particles[j].position;
+			strands[i].m_particles[j].color = c;
+		}
+	}
+
+	file.close();
+
+	// Hao's model sometimes has one particle strands
+	// When we find it, we remove the strands
+	for (int i = 0; i < m_numStrands; i++) {
+		if (strands[i].m_resolution == 1)
+		{
+			m_numStrands--;
+			m_numParticles--;
+			strands.erase(strands.begin() + i);
+		}
+	}
+
+	std::cout << "Number of strands : " << m_numStrands << std::endl;
+
+	render_particles.resize(m_numParticles);
+	std::cout << "Number of particles : " << m_numParticles << std::endl;
+
+	int pIdex = 0;
+	for (int i = 0; i<m_numStrands; i++) {
+		for (int j = 0; j < strands[i].m_resolution; j++) {
+
+			render_particles[pIdex].x = strands[i].m_particles[j].position.x;
+			render_particles[pIdex].y = strands[i].m_particles[j].position.y;
+			render_particles[pIdex].z = strands[i].m_particles[j].position.z;
+
+			render_particles[pIdex].nx = 0.0;
+			render_particles[pIdex].nx = 1.0;
+			render_particles[pIdex].nx = 0.0;
+
+			ofColor c = strands[i].m_particles[j].color;
+			render_particles[pIdex].r = (float)c.r / 255.f;
+			render_particles[pIdex].g = (float)c.g / 255.f;
+			render_particles[pIdex].b = (float)c.b / 255.f;
+			render_particles[pIdex].a = (float)c.a / 255.f;
+
+			pIdex++;
+		}
+	}
+
+	return true;
+}
 
 bool ofxHairModel::exportHairModel(string filename)
 {
@@ -268,7 +358,12 @@ bool ofxHairModel::exportHairModelAsText(string filename)
 		fout << resolution << endl;
 	}
 
-	fout.close();  //ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
+	fout.close();
 	std::cout << "saved as... '" << filename << "'" << std::endl;
 	return true;
+}
+
+bool ofxHairModel::isExistence()
+{
+	return strands.size() > 0 ? true : false;
 }

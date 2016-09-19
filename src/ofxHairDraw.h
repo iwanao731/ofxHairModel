@@ -19,7 +19,7 @@ public:
 	ofxHairDraw& setDrawHairNormal(bool v);
 	ofxHairDraw& setDrawHairGuide(bool v);
 
-	void refPosition(ofxHairModel model);
+	void updatePosition(ofxHairModel model);
 
 private:
 	GLuint buffers;   // vert+normal+texcord, index

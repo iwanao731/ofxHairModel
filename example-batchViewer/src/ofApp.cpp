@@ -32,7 +32,7 @@ void ofApp::update(){
 
 	ofxHairModel m;
 	m.loadHairModel(hairDir->getPath(frameCount));
-	viewer->refPosition(m);
+	viewer->updatePosition(m);
 	viewer->update();
 
 	frameCount++;

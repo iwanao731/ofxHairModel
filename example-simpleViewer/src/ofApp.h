@@ -25,6 +25,8 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+		void processOpenFileSelection(ofFileDialogResult openFileResult);
+
 		ofEasyCam cam;
 		ofxHairModel hairModel;
 		ofxHEMesh mesh;
