@@ -107,7 +107,7 @@ void ofxHairDraw::updatePosition(ofxHairModel model)
 	{
 		if (s.getHairType() == HairType::GUIDE_HAIR)
 		{
-			for (auto p : s.getParticles())
+			for (auto p : s.m_particles)
 			{
 				m_model.render_particles[i].x = p.position.x;
 				m_model.render_particles[i].y = p.position.y;

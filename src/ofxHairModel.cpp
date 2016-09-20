@@ -22,7 +22,7 @@ void ofxHairModel::addHairStrand(const ofVec3f position, const ofVec3f normal, c
 	ofColor c;
 	c.setHsb(ofRandom(0, 255), 200, 255, 255);
 
-	for (auto p : s.getParticles())
+	for (auto p : s.m_particles)
 	{
 		ofxRenderParticle rp;
 		rp.x = p.position.x;
@@ -86,7 +86,7 @@ bool ofxHairModel::loadHairModel(string filename, PRINT_INFO EPrint)
 		int resolution;
 		file.read((char*)&resolution, sizeof(resolution));
 		strands[i].setResolution(resolution);
-		strands[i].getParticles().resize(resolution);
+		strands[i].m_particles.resize(resolution);
 		strands[i].setHairType(HairType::GUIDE_HAIR);
 	}
 
@@ -104,7 +104,7 @@ bool ofxHairModel::loadHairModel(string filename, PRINT_INFO EPrint)
 			ofxHairParticle p(pos, 1.0);
 			p.position0 = p.position;
 			p.posPrev = p.position;
-			strands[i].setParticle(j, p);
+			strands[i].m_particles[j] = p;
 
 			render_particles[count].r = (float)c.r / 255.f;
 			render_particles[count].g = (float)c.g / 255.f;
@@ -115,7 +115,7 @@ bool ofxHairModel::loadHairModel(string filename, PRINT_INFO EPrint)
 				strands[i].setDiableParticle(0);
 			}
 			else {
-				float length = (strands[i].getPosition(j-1) - strands[i].getPosition(j)).length();
+				float length = (strands[i].m_particles[j - 1].position - strands[i].m_particles[j].position).length();
 				strands[i].setLength(j - 1, length);
 			}
 			count++;
@@ -144,8 +144,8 @@ bool ofxHairModel::loadHairModelUSC(string filename, PRINT_INFO EPrint)
 		int resolution = 0;
 		file.read((char*)&resolution, sizeof(resolution));
 		
+		strands[i].m_particles.resize(resolution);
 		strands[i].setResolution(resolution);
-		strands[i].getParticles().resize(resolution);
 		m_numParticles += resolution;
 
 		ofColor c;
@@ -155,9 +155,10 @@ bool ofxHairModel::loadHairModelUSC(string filename, PRINT_INFO EPrint)
 
 			float pos[3];
 			file.read((char*)&pos, sizeof(pos));
-			strands[i].setPosition(j, ofVec3f(pos[0], pos[1], pos[2]) * 300); // fix
-			strands[i].setPosition0(j, strands[i].getPosition(j));
-			strands[i].setColor(j, c);
+			strands[i].m_particles[j].position.set(pos[0], pos[1], pos[2]);
+			strands[i].m_particles[j].position = strands[i].m_particles[j].position * 300;
+			strands[i].m_particles[j].position0 = strands[i].m_particles[j].position;
+			strands[i].m_particles[j].color = c;
 		}
 	}
 
@@ -186,15 +187,15 @@ bool ofxHairModel::loadHairModelUSC(string filename, PRINT_INFO EPrint)
 	for (int i = 0; i<m_numStrands; i++) {
 		for (int j = 0; j < strands[i].getResolution(); j++) {
 
-			render_particles[pIdex].x = strands[i].getPosition(j).x;
-			render_particles[pIdex].y = strands[i].getPosition(j).y;
-			render_particles[pIdex].z = strands[i].getPosition(j).z;
+			render_particles[pIdex].x = strands[i].m_particles[j].position.x;
+			render_particles[pIdex].y = strands[i].m_particles[j].position.y;
+			render_particles[pIdex].z = strands[i].m_particles[j].position.z;
 
 			render_particles[pIdex].nx = 0.0;
 			render_particles[pIdex].nx = 1.0;
 			render_particles[pIdex].nx = 0.0;
 
-			ofColor c = strands[i].getColor(j);
+			ofColor c = strands[i].m_particles[j].color;
 			render_particles[pIdex].r = (float)c.r / 255.f;
 			render_particles[pIdex].g = (float)c.g / 255.f;
 			render_particles[pIdex].b = (float)c.b / 255.f;
@@ -226,9 +227,9 @@ bool ofxHairModel::exportHairModel(string filename)
 	for (int i = 0; i<m_numStrands; i++) {
 		for (int j = 0; j<strands[i].getResolution(); j++) {
 			float pos[3];
-			pos[0] = strands[i].getPosition(j).x;
-			pos[1] = strands[i].getPosition(j).y;
-			pos[2] = strands[i].getPosition(j).z;
+			pos[0] = strands[i].m_particles[j].position[0];
+			pos[1] = strands[i].m_particles[j].position[1];
+			pos[2] = strands[i].m_particles[j].position[2];
 			fout.write((char*)&pos, sizeof(pos));
 		}
 	}
@@ -290,7 +291,7 @@ bool ofxHairModel::loadHairModelAsText(string filename, PRINT_INFO EPrint)
 		int resolution;
 		file >> resolution;
 		strands[i].setResolution(resolution);
-		strands[i].getParticles().resize(resolution);
+		strands[i].m_particles.resize(resolution);
 	}
 
 	file.close();
@@ -304,10 +305,10 @@ bool ofxHairModel::loadHairModelAsText(string filename, PRINT_INFO EPrint)
 		//c = ofColor((float)c.r/255, (float)c.g/255, (float)c.b/255);
 
 		for (int j = 0; j<strands[i].getResolution(); j++) {
-			strands[i].setPosition(j, particles[count].position);
-			strands[i].setPosition0(j, ofVec3f(particles[count].position.x, particles[count].position.y, particles[count].position.z));
-			strands[i].setPositionTemp(j, particles[count].tmp_position);
-			strands[i].setColor(j, c);
+			strands[i].m_particles[j].position = particles[count].position;
+			strands[i].m_particles[j].position0 = ofVec3f(particles[count].position.x, particles[count].position.y, particles[count].position.z);
+			strands[i].m_particles[j].tmp_position = particles[count].tmp_position;
+			strands[i].m_particles[j].color = c;
 
 			indices.push_back(count);
 
@@ -316,13 +317,14 @@ bool ofxHairModel::loadHairModelAsText(string filename, PRINT_INFO EPrint)
 			float SgTip = 0.5;
 			float t = j / (float)strands[i].getResolution();
 			float Sg = (1.0f - t) * SgRoot + t * SgTip;
-			strands[i].setMass(j, Sg);
+			strands[i].m_particles[j].mass = Sg;
+			strands[i].m_particles[j].inv_mass = 1.0 / Sg;
 
 			if (j == 0) {
 				strands[i].setDiableParticle(0);
 			}
 			else {
-				float length = (strands[i].getPosition(j-1) - strands[i].getPosition(j)).length();
+				float length = (strands[i].m_particles[j - 1].position - strands[i].m_particles[j].position).length();
 				strands[i].setLength(j - 1, length);
 			}
 
@@ -353,9 +355,9 @@ bool ofxHairModel::exportHairModelAsText(string filename)
 	for (int i = 0; i<m_numStrands; i++) {
 		for (int j = 0; j<strands[i].getResolution(); j++) {
 			float pos[3];
-			pos[0] = strands[i].getPosition(j).x;
-			pos[1] = strands[i].getPosition(j).y;
-			pos[2] = strands[i].getPosition(j).z;
+			pos[0] = strands[i].m_particles[j].position[0];
+			pos[1] = strands[i].m_particles[j].position[1];
+			pos[2] = strands[i].m_particles[j].position[2];
 			fout << pos[0] << "\t" << pos[1] << "\t" << pos[2] << endl;
 		}
 	}
