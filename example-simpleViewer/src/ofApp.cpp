@@ -13,12 +13,7 @@ void ofApp::setup(){
 	if (hairModel.isExistence())
 	{
 		viewer = new ofxHairDraw(hairModel);
-		viewer->setDrawHairColor(true);
-		viewer->setDrawHairParticles(false);
-		viewer->setDrawHairEdges(true);
-		viewer->setDrawHairNormal(true);
-		viewer->setDrawHairGuide(true);
-		viewer->init();
+		viewer->init(EHairColor::HAIR_COLOR_ON, EHairParticle::HAIR_PARTICLE_OFF, EHairEdge::HAIR_EDGE_ON, EHairNormal::HAIR_NORMAL_ON, EHairGuide::HAIR_GUIDE_ON);
 	}
 	else {
 		cout << "not existence" << endl;
