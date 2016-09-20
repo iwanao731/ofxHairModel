@@ -22,7 +22,7 @@ void ofxHairModel::addHairStrand(const ofVec3f position, const ofVec3f normal, c
 	ofColor c;
 	c.setHsb(ofRandom(0, 255), 200, 255, 255);
 
-	for (auto p : s.m_particles)
+	for (auto p : s.getParticles())
 	{
 		ofxRenderParticle rp;
 		rp.x = p.position.x;
@@ -42,7 +42,7 @@ void ofxHairModel::addHairStrand(const ofVec3f position, const ofVec3f normal, c
 
 
 // This format is created by "A Reduced Model for Interactive Hairs", SIGGRAPH 2014
-bool ofxHairModel::loadHairModel(string filename)
+bool ofxHairModel::loadHairModel(string filename, PRINT_INFO EPrint)
 {
 	strands.clear();
 
@@ -55,7 +55,9 @@ bool ofxHairModel::loadHairModel(string filename)
 
 	// int : total particle size
 	file.read((char*)&m_numParticles, sizeof(m_numParticles));
-	std::cout << "Number of particles : " << m_numParticles << std::endl;
+
+	if(EPrint == PRINT_ON)
+		//std::cout << "Number of particles : " << m_numParticles << std::endl;
 
 	render_particles.resize(m_numParticles);
 
@@ -73,16 +75,19 @@ bool ofxHairModel::loadHairModel(string filename)
 
 	// int : total strand size
 	file.read((char*)&m_numStrands, sizeof(m_numStrands));
-	std::cout << "Number of strands : " << m_numStrands << std::endl;
+
+	if (EPrint == PRINT_ON)
+		//std::cout << "Number of strands : " << m_numStrands << std::endl;
+
 	strands.resize(m_numStrands);
 
 	// total strand size * int : particle size for each strand (use this to get the offset in all particle positions)
 	for (int i = 0; i<m_numStrands; i++) {
 		int resolution;
 		file.read((char*)&resolution, sizeof(resolution));
-		strands[i].m_resolution = resolution;
-		strands[i].m_length.resize(strands[i].m_resolution);
-		strands[i].m_particles.resize(resolution);
+		strands[i].setResolution(resolution);
+		strands[i].getParticles().resize(resolution);
+		strands[i].setHairType(HairType::GUIDE_HAIR);
 	}
 
 	file.close();
@@ -94,12 +99,12 @@ bool ofxHairModel::loadHairModel(string filename)
 		ofColor c;
 		c.setHsb(ofRandom(0, 255), 200, 255, 255);
 
-		for (int j = 0; j<strands[i].m_resolution; j++) {
+		for (int j = 0; j<strands[i].getResolution(); j++) {
 			ofVec3f pos(render_particles[count].x, render_particles[count].y, render_particles[count].z);
 			ofxHairParticle p(pos, 1.0);
 			p.position0 = p.position;
 			p.posPrev = p.position;
-			strands[i].m_particles[j] = p;
+			strands[i].setParticle(j, p);
 
 			render_particles[count].r = (float)c.r / 255.f;
 			render_particles[count].g = (float)c.g / 255.f;
@@ -110,7 +115,8 @@ bool ofxHairModel::loadHairModel(string filename)
 				strands[i].setDiableParticle(0);
 			}
 			else {
-				strands[i].m_length[j - 1] = (strands[i].m_particles[j - 1].position - strands[i].m_particles[j].position).length();
+				float length = (strands[i].getPosition(j-1) - strands[i].getPosition(j)).length();
+				strands[i].setLength(j - 1, length);
 			}
 			count++;
 		}
@@ -119,7 +125,7 @@ bool ofxHairModel::loadHairModel(string filename)
 	return true;
 }
 
-bool ofxHairModel::loadHairModelUSC(string filename)
+bool ofxHairModel::loadHairModelUSC(string filename, PRINT_INFO EPrint)
 {
 	ofFile file;
 	file.open(filename, ofFile::ReadOnly, true);
@@ -138,22 +144,20 @@ bool ofxHairModel::loadHairModelUSC(string filename)
 		int resolution = 0;
 		file.read((char*)&resolution, sizeof(resolution));
 		
-		strands[i].m_particles.resize(resolution);
-		strands[i].m_resolution = resolution;
-		strands[i].m_length.resize(strands[i].m_resolution);
+		strands[i].setResolution(resolution);
+		strands[i].getParticles().resize(resolution);
 		m_numParticles += resolution;
 
 		ofColor c;
 		c.setHsb(ofRandom(0, 255), 200, 255, 255);
 
-		for (int j = 0; j < strands[i].m_resolution; j++) {
+		for (int j = 0; j < strands[i].getResolution(); j++) {
 
 			float pos[3];
 			file.read((char*)&pos, sizeof(pos));
-			strands[i].m_particles[j].position.set(pos[0], pos[1], pos[2]);
-			strands[i].m_particles[j].position = strands[i].m_particles[j].position * 300;
-			strands[i].m_particles[j].position0 = strands[i].m_particles[j].position;
-			strands[i].m_particles[j].color = c;
+			strands[i].setPosition(j, ofVec3f(pos[0], pos[1], pos[2]) * 300); // fix
+			strands[i].setPosition0(j, strands[i].getPosition(j));
+			strands[i].setColor(j, c);
 		}
 	}
 
@@ -162,7 +166,7 @@ bool ofxHairModel::loadHairModelUSC(string filename)
 	// Hao's model sometimes has one particle strands
 	// When we find it, we remove the strands
 	for (int i = 0; i < m_numStrands; i++) {
-		if (strands[i].m_resolution == 1)
+		if (strands[i].getResolution() == 1)
 		{
 			m_numStrands--;
 			m_numParticles--;
@@ -170,24 +174,27 @@ bool ofxHairModel::loadHairModelUSC(string filename)
 		}
 	}
 
-	std::cout << "Number of strands : " << m_numStrands << std::endl;
+	if(EPrint)
+		std::cout << "Number of strands : " << m_numStrands << std::endl;
 
 	render_particles.resize(m_numParticles);
-	std::cout << "Number of particles : " << m_numParticles << std::endl;
+
+	if (EPrint)
+		std::cout << "Number of particles : " << m_numParticles << std::endl;
 
 	int pIdex = 0;
 	for (int i = 0; i<m_numStrands; i++) {
-		for (int j = 0; j < strands[i].m_resolution; j++) {
+		for (int j = 0; j < strands[i].getResolution(); j++) {
 
-			render_particles[pIdex].x = strands[i].m_particles[j].position.x;
-			render_particles[pIdex].y = strands[i].m_particles[j].position.y;
-			render_particles[pIdex].z = strands[i].m_particles[j].position.z;
+			render_particles[pIdex].x = strands[i].getPosition(j).x;
+			render_particles[pIdex].y = strands[i].getPosition(j).y;
+			render_particles[pIdex].z = strands[i].getPosition(j).z;
 
 			render_particles[pIdex].nx = 0.0;
 			render_particles[pIdex].nx = 1.0;
 			render_particles[pIdex].nx = 0.0;
 
-			ofColor c = strands[i].m_particles[j].color;
+			ofColor c = strands[i].getColor(j);
 			render_particles[pIdex].r = (float)c.r / 255.f;
 			render_particles[pIdex].g = (float)c.g / 255.f;
 			render_particles[pIdex].b = (float)c.b / 255.f;
@@ -219,9 +226,9 @@ bool ofxHairModel::exportHairModel(string filename)
 	for (int i = 0; i<m_numStrands; i++) {
 		for (int j = 0; j<strands[i].getResolution(); j++) {
 			float pos[3];
-			pos[0] = strands[i].m_particles[j].position[0];
-			pos[1] = strands[i].m_particles[j].position[1];
-			pos[2] = strands[i].m_particles[j].position[2];
+			pos[0] = strands[i].getPosition(j).x;
+			pos[1] = strands[i].getPosition(j).y;
+			pos[2] = strands[i].getPosition(j).z;
 			fout.write((char*)&pos, sizeof(pos));
 		}
 	}
@@ -241,7 +248,7 @@ bool ofxHairModel::exportHairModel(string filename)
 }
 
 
-bool ofxHairModel::loadHairModelAsText(string filename)
+bool ofxHairModel::loadHairModelAsText(string filename, PRINT_INFO EPrint)
 {
 	std::fstream file;
 	char buf[16];
@@ -254,7 +261,9 @@ bool ofxHairModel::loadHairModelAsText(string filename)
 
 	// int : total particle size
 	file >> m_numParticles;
-	std::cout << "Number of particles : " << m_numParticles << std::endl;
+
+	if(EPrint)
+		std::cout << "Number of particles : " << m_numParticles << std::endl;
 
 	ofxHairParticle *particles;
 	particles = new ofxHairParticle[m_numParticles];
@@ -270,16 +279,18 @@ bool ofxHairModel::loadHairModelAsText(string filename)
 
 	// int : total strand size
 	file >> m_numStrands;
-	std::cout << "Number of strands : " << m_numStrands << std::endl;
+	
+	if (EPrint)
+		std::cout << "Number of strands : " << m_numStrands << std::endl;
+
 	strands.resize(m_numStrands);
 
 	// total strand size * int : particle size for each strand (use this to get the offset in all particle positions)
 	for (int i = 0; i<m_numStrands; i++) {
 		int resolution;
 		file >> resolution;
-		strands[i].m_resolution = resolution;
-		strands[i].m_length.resize(strands[i].m_resolution);
-		strands[i].m_particles.resize(resolution);
+		strands[i].setResolution(resolution);
+		strands[i].getParticles().resize(resolution);
 	}
 
 	file.close();
@@ -292,27 +303,27 @@ bool ofxHairModel::loadHairModelAsText(string filename)
 		c.setHsb(ofRandom(0, 255), 200, 255, 255);
 		//c = ofColor((float)c.r/255, (float)c.g/255, (float)c.b/255);
 
-		for (int j = 0; j<strands[i].m_resolution; j++) {
-			strands[i].m_particles[j].position = particles[count].position;
-			strands[i].m_particles[j].position0 = ofVec3f(particles[count].position.x, particles[count].position.y, particles[count].position.z);
-			strands[i].m_particles[j].tmp_position = particles[count].tmp_position;
-			strands[i].m_particles[j].color = c;
+		for (int j = 0; j<strands[i].getResolution(); j++) {
+			strands[i].setPosition(j, particles[count].position);
+			strands[i].setPosition0(j, ofVec3f(particles[count].position.x, particles[count].position.y, particles[count].position.z));
+			strands[i].setPositionTemp(j, particles[count].tmp_position);
+			strands[i].setColor(j, c);
 
 			indices.push_back(count);
 
 			/* set mass */
 			float SgRoot = 1.0;
 			float SgTip = 0.5;
-			float t = j / (float)strands[i].m_resolution;
+			float t = j / (float)strands[i].getResolution();
 			float Sg = (1.0f - t) * SgRoot + t * SgTip;
-			strands[i].m_particles[j].mass = Sg;
-			strands[i].m_particles[j].inv_mass = 1.0 / Sg;
+			strands[i].setMass(j, Sg);
 
 			if (j == 0) {
 				strands[i].setDiableParticle(0);
 			}
 			else {
-				strands[i].m_length[j - 1] = (strands[i].m_particles[j - 1].position - strands[i].m_particles[j].position).length();
+				float length = (strands[i].getPosition(j-1) - strands[i].getPosition(j)).length();
+				strands[i].setLength(j - 1, length);
 			}
 
 			count++;
@@ -342,9 +353,9 @@ bool ofxHairModel::exportHairModelAsText(string filename)
 	for (int i = 0; i<m_numStrands; i++) {
 		for (int j = 0; j<strands[i].getResolution(); j++) {
 			float pos[3];
-			pos[0] = strands[i].m_particles[j].position[0];
-			pos[1] = strands[i].m_particles[j].position[1];
-			pos[2] = strands[i].m_particles[j].position[2];
+			pos[0] = strands[i].getPosition(j).x;
+			pos[1] = strands[i].getPosition(j).y;
+			pos[2] = strands[i].getPosition(j).z;
 			fout << pos[0] << "\t" << pos[1] << "\t" << pos[2] << endl;
 		}
 	}

@@ -19,6 +19,7 @@ public:
 	void update();
 	void draw();
 
+	void setHairModel(ofxHairModel &model);
 	ofxHairDraw& setDrawHairColor(bool v);
 	ofxHairDraw& setDrawHairParticles(bool v);
 	ofxHairDraw& setDrawHairEdges(bool v);

@@ -64,6 +64,11 @@ void ofxHairDraw::draw()
 	glPopClientAttrib();
 }
 
+void ofxHairDraw::setHairModel(ofxHairModel &model)
+{
+	m_model = model;
+}
+
 ofxHairDraw& ofxHairDraw::setDrawHairParticles(bool v)
 {
 	bDrawNode = v;
@@ -100,12 +105,15 @@ void ofxHairDraw::updatePosition(ofxHairModel model)
 	int i = 0;
 	for (auto s : model.strands)
 	{
-		for (auto p : s.m_particles)
+		if (s.getHairType() == HairType::GUIDE_HAIR)
 		{
-			m_model.render_particles[i].x = p.position.x;
-			m_model.render_particles[i].y = p.position.y;
-			m_model.render_particles[i].z = p.position.z;
-			i++;
+			for (auto p : s.getParticles())
+			{
+				m_model.render_particles[i].x = p.position.x;
+				m_model.render_particles[i].y = p.position.y;
+				m_model.render_particles[i].z = p.position.z;
+				i++;
+			}
 		}
 	}
 }

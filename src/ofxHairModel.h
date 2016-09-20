@@ -6,6 +6,10 @@
 #include "ofxHairParticle.h"
 
 class ofxRenderParticle;
+enum PRINT_INFO {
+	PRINT_OFF = 0,
+	PRINT_ON = 1,
+};
 
 class ofxHairModel
 {
@@ -18,9 +22,9 @@ public:
 	vector<int> indices;
 
 	void addHairStrand(const ofVec3f position, const ofVec3f normal, const float length, const int resolution);
-	bool loadHairModel(string filename);
-	bool loadHairModelAsText(string filename);
-	bool loadHairModelUSC(string filename);
+	bool loadHairModel(string filename, PRINT_INFO EPrint = PRINT_ON);
+	bool loadHairModelAsText(string filename, PRINT_INFO EPrint = PRINT_ON);
+	bool loadHairModelUSC(string filename, PRINT_INFO EPrint = PRINT_ON);
 
 	bool exportHairModel(string filename);
 	bool exportHairModelAsText(string filename);
@@ -34,6 +38,8 @@ private:
 	int m_numStrands;
 	int m_numParticles;
 };
+
+
 
 class ofxRenderParticle
 {
