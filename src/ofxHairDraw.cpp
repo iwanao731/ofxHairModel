@@ -11,8 +11,14 @@ ofxHairDraw::~ofxHairDraw()
 	glDeleteBuffers(1, &buffers);
 }
 
-void ofxHairDraw::init()
+void ofxHairDraw::init(EHairColor bCol, EHairParticle bParticle, EHairEdge bEdge, EHairNormal bNormal, EHairGuide bGuide)
 {
+	setDrawHairColor(bCol);
+	setDrawHairParticles(bParticle);
+	setDrawHairEdges(bEdge);
+	setDrawHairNormal(bNormal);
+	setDrawHairGuide(bGuide);
+
 	glGenBuffers(1, &buffers);
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffers);
@@ -37,9 +43,20 @@ void ofxHairDraw::draw()
 
 	glInterleavedArrays(GL_C4F_N3F_V3F, 0, BUFFER_OFFSET(0));
 
-	for (int i = 0; i < m_model.strands.size(); i++) {
-		int res = m_model.strands[i].getResolution();
-		glDrawArrays(GL_LINE_STRIP, i*res, res);
+	if (bDrawEdge)
+	{
+		for (int i = 0; i < m_model.strands.size(); i++) {
+			int res = m_model.strands[i].getResolution();
+			glDrawArrays(GL_LINE_STRIP, i*res, res);
+		}
+	}
+
+	if (bDrawNode)
+	{
+		for (int i = 0; i < m_model.strands.size(); i++) {
+			int res = m_model.strands[i].getResolution();
+			glDrawArrays(GL_POINTS, i*res, res);
+		}
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -49,32 +66,32 @@ void ofxHairDraw::draw()
 
 ofxHairDraw& ofxHairDraw::setDrawHairParticles(bool v)
 {
-	bNode = v;
+	bDrawNode = v;
 	return *this;
 }
 
 ofxHairDraw& ofxHairDraw::setDrawHairEdges(bool v)
 {
-	bEdge = v;
+	bDrawEdge = v;
 	return *this;
 }
 
 ofxHairDraw& ofxHairDraw::setDrawHairColor(bool v)
 {
-	bColor = v;
+	bDrawColor = v;
 	return *this;
 }
 
 ofxHairDraw& ofxHairDraw::setDrawHairNormal(bool v)
 {
-	bNormalHair = v;
+	bDrawNormalHair = v;
 	return *this;
 }
 
 
 ofxHairDraw& ofxHairDraw::setDrawHairGuide(bool v)
 {
-	bGuideHair = v;
+	bDrawGuideHair = v;
 	return *this;
 }
 
