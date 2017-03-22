@@ -17,9 +17,9 @@ This addon is possible to import hair model and view it.
 ## How To Use?
   1. Please put this folder to addon folder.
   2. Please download hair and face database from Hair Database below.
-  3. Please put them in ofxHairModel\example-simpleViewer\bin\data".
-  4. Please run projectGenerator and select this folder. Then you should select addons written above.
-  5. Please change the filename in src/ofApp.cpp.
+  3. Please put them in "ofxHairModel\example-simpleViewer\bin\data".
+  4. Please run projectGenerator and select this folder. Then you should select addons written in Dependencies.
+  5. Please change the hairname in src/ofApp.cpp.
 
           void ofApp::setup(){
           	string hairname = "strands00001.data"; // USC-HairSalon Model
