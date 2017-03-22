@@ -19,7 +19,21 @@ This addon is possible to import hair model and view it.
   2. Please download hair and face database from Hair Database below.
   3. Please put them in ofxHairModel\example-simpleViewer\bin\data".
   4. Please run projectGenerator and select this folder. Then you should select addons written above.
-  5. Please change the filename written in the function "void setup()"" in src/ofApp.cpp.
+  5. Please change the filename in src/ofApp.cpp.
+
+          void ofApp::setup(){
+          	string hairname = "strands00001.data"; // USC-HairSalon Model
+          	string filename = "head_model.obj";
+
+          	hairModel.loadHairModelUSC(hairname);  // for USC-HairSalon
+          	//hairModel.loadHairModel(hairname);   // for ReducedHairModel
+
+          	hairModel.exportHairModelAsText("exported_" + hairname);
+          	mesh.loadOBJModel(filename);
+
+            ...
+          }
+
   6. Run!
 
 ## Hair Database
