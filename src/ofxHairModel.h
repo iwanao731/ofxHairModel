@@ -29,6 +29,11 @@ public:
 	bool exportHairModel(string filename);
 	bool exportHairModelAsText(string filename);
 
+	// TBD
+	//bool exportReducedStepHairModel(const string filename, int step);
+	//bool exportReducedLogHairModel(const string filename, int maxStep);
+
+
 	int getNumParticles() { return m_numParticles; };
 	int getNumStrand() { return m_numStrands; }
 

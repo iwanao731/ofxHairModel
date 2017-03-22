@@ -24,23 +24,23 @@ public:
 	void setup(const unsigned int num, const float length, const ofVec3f position, const ofVec3f normal);
 
 	// set function
-	void setDiableParticle(int index);
+	void setDiableParticle(const int index);
 	void setResolution(const int resolution);
-	void setHairType(const HairType type) { m_hairType = type; }
-	void setRootTriRatio_Idx(int idx1, int idx2, int idx3);
-	void setRootTriRatio_S(float s) { root_ratio.s = s; }
-	void setRootTriRatio_T(float t) { root_ratio.t = t; }
-	void setRootTriRatio_U(float u) { root_ratio.u = u; }
-	void setLength(const int index, float length) { m_length[index] = length; }
+	void setHairType(const HairType &type) { m_hairType = type; }
+	void setRootTriRatio_Idx(const int idx1, const int idx2, const int idx3);
+	void setRootTriRatio_S(const float s) { root_ratio.s = s; }
+	void setRootTriRatio_T(const float t) { root_ratio.t = t; }
+	void setRootTriRatio_U(const float u) { root_ratio.u = u; }
+	void setLength(const int index, const float length) { m_length[index] = length; }
 
 	// get function
-	int getResolution() { return m_resolution; }
-	int getRootTriRatio_Idx(int number) { return root_ratio.idx[number]; }
-	float getRootTriRatio_S() { return root_ratio.s; }
-	float getRootTriRatio_T() { return root_ratio.t; }
-	float getRootTriRatio_U() { return root_ratio.u; }
-	float getLength(int index) { return m_length[index]; }
-	HairType getHairType() { return m_hairType; }
+	const int getResolution() { return m_resolution; }
+	const int getRootTriRatio_Idx(int number) { return root_ratio.idx[number]; }
+	const float getRootTriRatio_S() { return root_ratio.s; }
+	const float getRootTriRatio_T() { return root_ratio.t; }
+	const float getRootTriRatio_U() { return root_ratio.u; }
+	const float getLength(int index) { return m_length[index]; }
+	const HairType getHairType() { return m_hairType; }
 
 private:
 	int m_resolution;
@@ -48,6 +48,5 @@ private:
 	interpolate root_ratio;
 	std::vector<float> m_length;
 };
-
 
 #endif

@@ -8,6 +8,8 @@ void ofApp::setup(){
 	hairModel.loadHairModelUSC(hairname);
 	//hairModel.loadHairModel(hairname);
 
+	hairModel.exportHairModelAsText("exported_" + hairname);
+
 	mesh.loadOBJModel(filename);
 
 	if (hairModel.isExistence())

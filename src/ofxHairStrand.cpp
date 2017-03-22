@@ -20,12 +20,12 @@ void ofxHairStrand::setResolution(const int resolution)
 	m_length.resize(m_resolution);
 }
 
-void ofxHairStrand::setDiableParticle(int index)
+void ofxHairStrand::setDiableParticle(const int index)
 {
 	m_particles[index].enabled = false;
 }
 
-void ofxHairStrand::setRootTriRatio_Idx(int idx1, int idx2, int idx3) {
+void ofxHairStrand::setRootTriRatio_Idx(const int idx1, const int idx2, const int idx3) {
 	root_ratio.idx[0] = idx1;
 	root_ratio.idx[1] = idx2;
 	root_ratio.idx[2] = idx3;

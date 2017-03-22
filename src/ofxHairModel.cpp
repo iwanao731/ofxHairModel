@@ -77,7 +77,7 @@ bool ofxHairModel::loadHairModel(string filename, PRINT_INFO EPrint)
 	file.read((char*)&m_numStrands, sizeof(m_numStrands));
 
 	if (EPrint == PRINT_ON)
-		//std::cout << "Number of strands : " << m_numStrands << std::endl;
+		std::cout << "Number of strands : " << m_numStrands << std::endl;
 
 	strands.resize(m_numStrands);
 
@@ -87,7 +87,7 @@ bool ofxHairModel::loadHairModel(string filename, PRINT_INFO EPrint)
 		file.read((char*)&resolution, sizeof(resolution));
 		strands[i].setResolution(resolution);
 		strands[i].m_particles.resize(resolution);
-		strands[i].setHairType(HairType::GUIDE_HAIR);
+		strands[i].setHairType(HairType::GUIDE_HAIR);	// initially, all strands are treated as GUIDE HAIR to simulation for all
 	}
 
 	file.close();
@@ -95,9 +95,8 @@ bool ofxHairModel::loadHairModel(string filename, PRINT_INFO EPrint)
 	int count = 0;
 	for (int i = 0; i<m_numStrands; i++) {
 
-		// set random color
 		ofColor c;
-		c.setHsb(ofRandom(0, 255), 200, 255, 255);
+		c.setHsb(ofRandom(0, 255), 200, 255, 255);	// set random color
 
 		for (int j = 0; j<strands[i].getResolution(); j++) {
 			ofVec3f pos(render_particles[count].x, render_particles[count].y, render_particles[count].z);

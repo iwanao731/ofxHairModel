@@ -105,7 +105,7 @@ void ofxHairDraw::updatePosition(ofxHairModel model)
 	int i = 0;
 	for (auto s : model.strands)
 	{
-		if (s.getHairType() == HairType::GUIDE_HAIR)
+		if (s.getHairType() == HairType::NORMAL_HAIR)
 		{
 			for (auto p : s.m_particles)
 			{
