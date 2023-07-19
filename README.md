@@ -38,5 +38,4 @@ This addon is possible to import hair model and view it.
 
 ## Hair Database
 + A Reduced Model for Interactive Hairs [<a href="http://gaps-zju.org/reducedhair/">link</a>]
-+ USC-HairSalon: A 3D Hairstyle Database for Hair Modeling [<a href="http://www-scf.usc.edu/~liwenhu/SHM/database.html">link</a>]
- (TBD...)  
++ USC-HairSalon: A 3D Hairstyle Database for Hair Modeling [<a href="https://drive.google.com/file/d/118ZwW_pDw9IvnoTndHMk4wLZcPb0cw4v/view?usp=sharing">link</a>]
